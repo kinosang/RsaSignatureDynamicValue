@@ -84,8 +84,14 @@ class RsaSignatureDynamicValue {
             const sig = new r.Signature({ alg: this.algorithm });
 
             if (this.algorithm.endsWith('ECDSA')) {
-                sig.init({d: this.key, curve: this.curve});
+                sig.init({ d: this.key, curve: this.curve });
             } else {
+                if (!this.key.startsWith('-----BEGIN RSA PRIVATE KEY-----')) {
+                    this.key = '-----BEGIN RSA PRIVATE KEY-----' + this.key;
+                }
+                if (!this.key.endsWith('-----END RSA PRIVATE KEY-----')) {
+                    this.key = this.key + '-----END RSA PRIVATE KEY-----';
+                }
                 sig.init(this.key);
             }
 
@@ -109,35 +115,35 @@ RsaSignatureDynamicValue.inputs = [
     InputField('source', 'Source', 'Select', {
         choices: {
             body: 'Request Body',
-            message: 'Message'
+            message: 'Message',
         },
-        defaultValue: 'body'
+        defaultValue: 'body',
     }),
     InputField('filters', 'Body Filters', 'KeyValueList', {
         keyName: 'Parameter Key',
-        valueName: '(Check to ignore)'
+        valueName: '(Check to ignore)',
     }),
     InputField('sort', 'Body Re-Sorting', 'Checkbox', { defaultValue: true }),
     InputField('message', 'Message', 'String'),
     InputField('key', 'Private Key', 'String'),
     InputField('algorithm', 'Algorithm', 'Select', {
         choices: algorithms,
-        defaultValue: 'SHA256withRSA'
+        defaultValue: 'SHA256withRSA',
     }),
     InputField('curve', 'Curve', 'Select', {
         choices: {
             secp256r1: 'secp256r1 (= NIST P-256, P-256, prime256v1)',
             secp256k1: 'secp256k1',
-            secp384r1: 'secp384r1 (= NIST P-384, P-384)'
-        }
+            secp384r1: 'secp384r1 (= NIST P-384, P-384)',
+        },
     }),
     InputField('encoding', 'Encoding', 'Select', {
         choices: {
             hex: 'HEX',
-            base64: 'BASE64'
+            base64: 'BASE64',
         },
-        defaultValue: 'hex'
-    })
+        defaultValue: 'hex',
+    }),
 ];
 
 registerDynamicValueClass(RsaSignatureDynamicValue);
