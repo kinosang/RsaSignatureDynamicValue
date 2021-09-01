@@ -109,8 +109,8 @@ class RsaSignatureDynamicValue {
     }
 }
 
-RsaSignatureDynamicValue.identifier = 'me.7in0.PawExtensions.RsaSignatureDynamicValue';
-RsaSignatureDynamicValue.title = 'RSA Signature';
+RsaSignatureDynamicValue.identifier = 'net.tripletwenty.PawExtensions.RsaSignatureDynamicValue';
+RsaSignatureDynamicValue.title = 'RSA-Signature';
 RsaSignatureDynamicValue.inputs = [
     InputField('source', 'Source', 'Select', {
         choices: {
