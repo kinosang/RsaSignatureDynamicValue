@@ -84,7 +84,11 @@ class RsaSignatureDynamicValue {
             const sig = new r.Signature({ alg: this.algorithm });
 
             if (this.algorithm.endsWith('ECDSA')) {
-                sig.init({ d: this.key, curve: this.curve });
+                try {
+                  sig.init({ d: this.key, curve: this.curve });
+                } catch (ex) {
+                  throw "Please make sure you selected the right Algorithm. "+ex;
+                }
             } else {
                 if (!this.key.startsWith('-----BEGIN RSA PRIVATE KEY-----')) {
                     this.key = '-----BEGIN RSA PRIVATE KEY-----' + this.key;
@@ -92,7 +96,11 @@ class RsaSignatureDynamicValue {
                 if (!this.key.endsWith('-----END RSA PRIVATE KEY-----')) {
                     this.key = this.key + '-----END RSA PRIVATE KEY-----';
                 }
-                sig.init(this.key);
+                try {
+                  sig.init(this.key);
+                } catch (ex) {
+                  throw "Please make sure you selected the right Algorithm. "+ex;
+                }
             }
 
             sig.updateString(this.message);
