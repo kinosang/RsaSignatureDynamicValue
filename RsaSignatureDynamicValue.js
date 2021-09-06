@@ -82,29 +82,53 @@ class RsaSignatureDynamicValue {
             }
 
             const sig = new r.Signature({ alg: this.algorithm });
+            const privateKey = (this.keyEncoding === 'hex')? this.key : r.b64tohex(this.key);
 
             if (this.algorithm.endsWith('ECDSA')) {
                 try {
-                  sig.init({ d: this.key, curve: this.curve });
+                  if(this.keyFormat == 'pkcs8') {
+                    let pkcs8PrivateKey = r.KEYUTIL.getKeyFromPlainPrivatePKCS8Hex(privateKey)
+                    sig.init(pkcs8PrivateKey);
+                  } else {
+                    sig.init({ d: privateKey, curve: this.curve });
+                  }
                 } catch (ex) {
-                  throw "Please make sure you selected the right Algorithm. "+ex;
+                  throw "Please make sure you selected the right algorithm. "+ex;
                 }
             } else {
-                if (!this.key.startsWith('-----BEGIN RSA PRIVATE KEY-----')) {
-                    this.key = '-----BEGIN RSA PRIVATE KEY-----' + this.key;
+                if (!privateKey.startsWith('-----BEGIN RSA PRIVATE KEY-----')) {
+                    privateKey = '-----BEGIN RSA PRIVATE KEY-----' + privateKey;
                 }
-                if (!this.key.endsWith('-----END RSA PRIVATE KEY-----')) {
-                    this.key = this.key + '-----END RSA PRIVATE KEY-----';
+                if (!privateKey.endsWith('-----END RSA PRIVATE KEY-----')) {
+                    privateKey = privateKey + '-----END RSA PRIVATE KEY-----';
                 }
                 try {
-                  sig.init(this.key);
+                  sig.init(privateKey);
                 } catch (ex) {
-                  throw "Please make sure you selected the right Algorithm. "+ex;
+                  throw "Please make sure you selected the right algorithm. "+ex;
                 }
             }
 
             sig.updateString(this.message);
             const signature = sig.sign();
+
+            // If public key is given, run validation to see if the keys match
+            if(this.publickey) {
+              const publicKeyUncompressed = (this.keyEncoding === 'hex')? this.publickey : r.b64tohex(this.publickey);
+              let publicKey = new r.KJUR.crypto.ECDSA({pub: publicKeyUncompressed, curve: this.curve})
+              console.log("RsaSignature | Verifying key pair for message: '"+this.message+"'");
+              let sigVerification = new r.Signature({ alg: this.algorithm });
+              sigVerification.init(publicKey);
+              sigVerification.updateString(this.message);
+              let isValid = sigVerification.verify(signature);
+              if(isValid) {
+                console.log("RsaSignature | Signature is valid, keys are matching");
+              } else {
+                throw "The signature is invalid. Please make sure the keys match."
+              }
+
+            }
+
             if (this.encoding === 'hex') {
                 return signature;
             }
@@ -134,6 +158,7 @@ RsaSignatureDynamicValue.inputs = [
     InputField('sort', 'Body Re-Sorting', 'Checkbox', { defaultValue: true }),
     InputField('message', 'Message', 'String'),
     InputField('key', 'Private Key', 'String'),
+    InputField('publickey', 'Public Key', 'String'),
     InputField('algorithm', 'Algorithm', 'Select', {
         choices: algorithms,
         defaultValue: 'SHA256withRSA',
@@ -145,7 +170,21 @@ RsaSignatureDynamicValue.inputs = [
             secp384r1: 'secp384r1 (= NIST P-384, P-384)',
         },
     }),
-    InputField('encoding', 'Encoding', 'Select', {
+    InputField('keyEncoding', 'Key Encoding', 'Select', {
+        choices: {
+            hex: 'HEX',
+            base64: 'BASE64',
+        },
+        defaultValue: 'base64',
+    }),
+    InputField('keyFormat', 'Key Format', 'Select', {
+        choices: {
+            pkcs8: 'PKCS8',
+            other: 'Other',
+        },
+        defaultValue: 'other',
+    }),
+    InputField('encoding', 'Signature Encoding', 'Select', {
         choices: {
             hex: 'HEX',
             base64: 'BASE64',
