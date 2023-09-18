@@ -116,7 +116,7 @@ class RsaSignatureDynamicValue {
             if(this.publickey) {
               const publicKeyUncompressed = (this.keyEncoding === 'hex')? this.publickey : r.b64tohex(this.publickey);
               let publicKey = new r.KJUR.crypto.ECDSA({pub: publicKeyUncompressed, curve: this.curve})
-              console.log("RsaSignature | Verifying key pair for message: '"+this.message+"'");
+              console.log('RsaSignature | Verifying key pair for message: ' + this.message);
               let sigVerification = new r.Signature({ alg: this.algorithm });
               sigVerification.init(publicKey);
               sigVerification.updateString(this.message);
