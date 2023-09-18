@@ -105,7 +105,7 @@ class RsaSignatureDynamicValue {
                 try {
                   sig.init(privateKey);
                 } catch (ex) {
-                  throw "Please make sure you selected the right algorithm. "+ex;
+                  throw 'Please make sure you selected the right algorithm. ' + ex;
                 }
             }
 
