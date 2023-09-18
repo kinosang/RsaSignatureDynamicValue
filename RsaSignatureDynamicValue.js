@@ -93,7 +93,7 @@ class RsaSignatureDynamicValue {
                     sig.init({ d: privateKey, curve: this.curve });
                   }
                 } catch (ex) {
-                  throw "Please make sure you selected the right algorithm. "+ex;
+                  throw 'Please make sure you selected the right algorithm. ' + ex;
                 }
             } else {
                 if (!privateKey.startsWith('-----BEGIN RSA PRIVATE KEY-----')) {
