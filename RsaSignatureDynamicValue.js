@@ -122,7 +122,7 @@ class RsaSignatureDynamicValue {
               sigVerification.updateString(this.message);
               let isValid = sigVerification.verify(signature);
               if(isValid) {
-                console.log("RsaSignature | Signature is valid, keys are matching");
+                console.log('RsaSignature | Signature is valid, keys are matching');
               } else {
                 throw "The signature is invalid. Please make sure the keys match."
               }
