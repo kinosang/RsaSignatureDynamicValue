@@ -82,7 +82,7 @@ class RsaSignatureDynamicValue {
             }
 
             const sig = new r.Signature({ alg: this.algorithm });
-            const privateKey = (this.keyEncoding === 'hex')? this.key : r.b64tohex(this.key);
+            let privateKey = (this.keyEncoding === 'hex')? this.key : r.b64tohex(this.key);
 
             if (this.algorithm.endsWith('ECDSA')) {
                 try {
