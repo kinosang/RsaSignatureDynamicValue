@@ -124,7 +124,7 @@ class RsaSignatureDynamicValue {
               if(isValid) {
                 console.log('RsaSignature | Signature is valid, keys are matching');
               } else {
-                throw "The signature is invalid. Please make sure the keys match."
+                throw `The signature is invalid. Please make sure the keys match.`
               }
 
             }
